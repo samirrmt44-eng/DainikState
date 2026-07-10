@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DainikState — झारखंड की आवाज़, अपना मंच</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
+  body { background: #f0f2f5; color: #1c1e21; }
+
+  /* ====== HEADER ====== */
+  header.topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: linear-gradient(90deg, #b71c1c, #e53935);
+    color: #fff; padding: 10px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  header.topbar h1 { font-size: 24px; letter-spacing: 0.5px; font-weight: 800; }
+  header.topbar h1 span { color: #ffd54f; }
+  .topbar-actions { display: flex; gap: 8px; align-items: center; }
+  .topbar-actions button {
+    background: rgba(255,255,255,0.2); border: none; color: #fff;
+    padding: 7px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px;
+  }
+  .topbar-actions button:hover { background: rgba(255,255,255,0.35); }
+  .user-badge {
+    display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15);
+    padding: 3px 12px 3px 3px; border-radius: 20px;
+  }
+  .user-badge .uavatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #ffd54f; color: #b71c1c; display: flex; align-items: center;
+    justify-content: center; font-weight: 700; font-size: 13px;
+  }
+  .user-badge .uname { font-size: 13px; font-weight: 600; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* ====== LAYOUT (now single column — channel ad removed) ====== */
+  .container { max-width: 720px; margin: 16px auto; padding: 0 12px; }
+
+  /* ====== REGISTRATION MODAL ====== */
+  .reg-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+    display: flex; align-items: center; justify-content: center; z-index: 2000;
+    backdrop-filter: blur(4px);
+  }
+  .reg-overlay.hidden { display: none; }
+  .reg-modal {
+    background: #fff; border-radius: 16px; padding: 32px; max-width: 420px; width: 90%;
+    text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: pop 0.4s ease;
+  }
+  @keyframes pop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .reg-modal h2 { color: #b71c1c; margin-bottom: 8px; font-size: 22px; }
+  .reg-modal p { color: #65676b; margin-bottom: 20px; font-size: 14px; }
+  .reg-modal input {
+    width: 100%; padding: 12px; border: 2px solid #ccd0d5; border-radius: 8px;
+    font-size: 15px; margin-bottom: 12px;
+  }
+  .reg-modal input:focus { outline: none; border-color: #b71c1c; }
+  .reg-modal button {
+    width: 100%; padding: 12px; background: #b71c1c; color: #fff;
+    border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  .reg-modal button:hover { background: #9a1313; }
+  .reg-modal .skip { background: transparent; color: #65676b; margin-top: 8px; }
+  .reg-modal .skip:hover { background: #f0f2f5; }
+
+  /* ====== COMPOSER ====== */
+  .composer {
+    background: #fff; border-radius: 12px; padding: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 16px;
+  }
+  .composer h3 { color: #b71c1c; margin-bottom: 10px; font-size: 16px; }
+  .composer textarea {
+    width: 100%; min-height: 70px; padding: 10px; border-radius: 8px;
+    border: 1px solid #ccd0d5; resize: vertical; font-size: 15px;
+    font-family: inherit;
+  }
+  .composer textarea:focus { outline: none; border-color: #b71c1c; }
+  .composer-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center; }
+  .composer-row label {
+    background: #f0f2f5; padding: 6px 12px; border-radius: 20px; cursor: pointer;
+    font-size: 13px; color: #b71c1c; font-weight: 600;
+  }
+  .composer-row label:hover { background: #e4e6eb; }
+  .composer-row input[type=file] { display: none; }
+  .composer-row .post-btn {
+    background: #b71c1c; color: #fff; border: none; padding: 8px 18px;
+    border-radius: 20px; font-weight: 600; cursor: pointer; margin-left: auto;
+  }
+  .composer-row .post-btn:hover { background: #9a1313; }
+  .file-preview { margin-top: 8px; }
+  .file-preview img, .file-preview video { max-width: 100%; max-height: 200px; border-radius: 8px; }
+
+  /* ====== FILTER BAR ====== */
+  .filter-bar {
+    background: #fff; border-radius: 12px; padding: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 16px;
+    display: flex; gap: 6px; flex-wrap: wrap; overflow-x: auto;
+  }
+  .filter-bar button {
+    background: #f0f2f5; border: none; padding: 7px 14px;
+    border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px;
+    white-space: nowrap; color: #65676b;
+  }
+  .filter-bar button.active { background: #b71c1c; color: #fff; }
+  .filter-bar button:hover:not(.active) { background: #e4e6eb; }
+
+  /* ====== FEED POSTS ====== */
+  .feed { display: flex; flex-direction: column; gap: 14px; }
+  .post {
+    background: #fff; border-radius: 12px; padding: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden; transition: transform 0.2s;
+  }
+  .post:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+  /* Source badge (News / Odysee / User) */
+  .source-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 12px; font-size: 11px;
+    font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase;
+  }
+  .source-badge.news { background: #fff3cd; color: #b71c1c; }
+  .source-badge.odysee { background: #fde7f3; color: #c2185b; }
+  .source-badge.user { background: #e3f2fd; color: #1565c0; }
+
+  .post-header {
+    display: flex; align-items: center; gap: 10px; padding: 14px 14px 8px;
+  }
+  .avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; flex-shrink: 0;
+  }
+  .post-meta { flex: 1; min-width: 0; }
+  .post-meta .name { font-weight: 600; font-size: 14px; }
+  .post-meta .time { font-size: 12px; color: #65676b; }
+  .post-text { padding: 0 14px 8px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; font-size: 15px; }
+  .post-text a { color: #b71c1c; text-decoration: none; font-weight: 600; }
+  .post-text a:hover { text-decoration: underline; }
+
+  /* Top comment band (above media) */
+  .top-comment-band {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffe082 100%);
+    border: 2px solid #ffb300; border-radius: 12px;
+    padding: 10px 14px; margin: 0 14px 10px;
+    display: flex; gap: 10px; align-items: flex-start;
+    box-shadow: 0 0 20px rgba(255, 179, 0, 0.4);
+    animation: glow 2s ease-in-out infinite alternate;
+    position: relative;
+  }
+  @keyframes glow { from { box-shadow: 0 0 15px rgba(255, 179, 0, 0.3); } to { box-shadow: 0 0 25px rgba(255, 179, 0, 0.6); } }
+  .top-comment-band .tc-badge {
+    position: absolute; top: -10px; left: 14px;
+    background: #ff6f00; color: #fff; padding: 2px 10px;
+    border-radius: 10px; font-size: 11px; font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .top-comment-band .c-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #ff6f00; color: #fff; display: flex;
+    align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+    border: 2px solid #fff;
+  }
+  .top-comment-band .c-body { flex: 1; min-width: 0; }
+  .top-comment-band .c-name { font-weight: 700; font-size: 14px; color: #e65100; }
+  .top-comment-band .c-text { font-size: 14px; margin: 2px 0; color: #1c1e21; }
+  .top-comment-band .c-stats { font-size: 12px; color: #e65100; font-weight: 600; }
+  .top-comment-band .c-stats .like-btn { cursor: pointer; }
+
+  /* Media */
+  .post-media { position: relative; }
+  .post-media img, .post-media video { width: 100%; max-height: 500px; object-fit: cover; display: block; }
+
+  /* Odysee video card */
+  .odysee-card {
+    background: #000; overflow: hidden;
+    position: relative; cursor: pointer; aspect-ratio: 16/9;
+  }
+  .odysee-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: opacity 0.3s; }
+  .odysee-card:hover img { opacity: 1; }
+  .odysee-card .play-icon {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 64px; height: 64px; background: rgba(255,255,255,0.92);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 26px; color: #c2185b; padding-left: 4px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .odysee-card .v-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.95));
+    color: #fff; padding: 36px 16px 14px;
+  }
+  .odysee-card .v-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; line-height: 1.3; }
+  .odysee-card .v-meta { font-size: 12px; opacity: 0.85; }
+  .odysee-card .odysee-watermark {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(0,0,0,0.65); color: #fff;
+    padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .post-actions {
+    display: flex; gap: 4px; padding: 6px 8px;
+    border-top: 1px solid #e4e6eb;
+  }
+  .post-actions button {
+    flex: 1; background: transparent; border: none; padding: 8px;
+    border-radius: 8px; cursor: pointer; color: #65676b; font-weight: 600;
+    font-size: 13px; transition: background 0.2s;
+  }
+  .post-actions button:hover { background: #f0f2f5; }
+  .post-actions button.liked { color: #e0245e; }
+
+  /* Comments */
+  .comments-section { padding: 8px 14px 14px; border-top: 1px solid #e4e6eb; }
+  .comments-section h4 { font-size: 13px; color: #65676b; margin-bottom: 8px; }
+  .comment {
+    background: #f0f2f5; border-radius: 14px; padding: 8px 12px; margin-bottom: 6px;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .comment .c-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #b71c1c; color: #fff; display: flex;
+    align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;
+  }
+  .comment .c-body { flex: 1; min-width: 0; }
+  .comment .c-name { font-weight: 600; font-size: 12px; }
+  .comment .c-text { font-size: 14px; }
+  .comment .c-actions { display: flex; gap: 10px; margin-top: 4px; font-size: 12px; color: #65676b; }
+  .comment .c-actions span { cursor: pointer; }
+  .comment .c-actions .like-btn.liked { color: #e0245e; font-weight: 700; }
+  .new-comment {
+    display: flex; gap: 6px; margin-top: 10px;
+  }
+  .new-comment input {
+    flex: 1; padding: 7px 12px; border: 1px solid #ccd0d5; border-radius: 20px; font-size: 13px; min-width: 0;
+  }
+  .new-comment input:focus { outline: none; border-color: #b71c1c; }
+  .new-comment button {
+    background: #b71c1c; color: #fff; border: none; padding: 6px 14px;
+    border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px;
+  }
+
+  /* Toast & Modal */
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #1c1e21; color: #fff; padding: 10px 20px; border-radius: 20px;
+    font-size: 14px; z-index: 1000; opacity: 0; transition: opacity 0.3s;
+    max-width: 90%; text-align: center;
+  }
+  .toast.show { opacity: 1; }
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+    display: none; align-items: center; justify-content: center; z-index: 1000;
+  }
+  .modal.open { display: flex; }
+  .modal img { max-width: 95%; max-height: 95%; border-radius: 8px; }
+  .modal .close-btn {
+    position: absolute; top: 16px; right: 16px; background: #fff; border: none;
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 18px; font-weight: 700;
+  }
+
+  /* Loading skeleton */
+  .skeleton {
+    background: #fff; border-radius: 12px; padding: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 14px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .skeleton-line { background: #e4e6eb; border-radius: 4px; height: 12px; margin-bottom: 8px; }
+  .skeleton-line.short { width: 40%; }
+  .skeleton-line.long { width: 90%; }
+  .skeleton-line.medium { width: 70%; }
+
+  footer { text-align: center; padding: 24px; color: #65676b; font-size: 12px; }
+  footer a { color: #b71c1c; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>📰 <span>Dainik</span>State</h1>
+  <div class="topbar-actions">
+    <div class="user-badge" id="userBadge" style="display:none;">
+      <div class="uavatar" id="uAvatar">U</div>
+      <div class="uname" id="uName">User</div>
+    </div>
+    <button onclick="scrollToTop()">⬆ Top</button>
+    <button onclick="refreshFeed()" title="Refresh">🔄</button>
+  </div>
+</header>
+
+<div class="container">
+  <main>
+    <!-- Composer -->
+    <div class="composer">
+      <h3>✍️ अपना विचार साझा करें</h3>
+      <textarea id="postText" placeholder="आज आपके मन में क्या है?"></textarea>
+      <div class="file-preview" id="filePreview"></div>
+      <div class="composer-row">
+        <label for="imgInput">🖼️ फोटो</label>
+        <input type="file" id="imgInput" accept="image/*" onchange="handleFile(event, 'image')" />
+        <label for="vidInput">🎬 वीडियो</label>
+        <input type="file" id="vidInput" accept="video/*" onchange="handleFile(event, 'video')" />
+        <button class="post-btn" onclick="addPost()">पोस्ट करें</button>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-bar">
+      <button class="active" data-filter="all" onclick="setFilter('all')">🌐 सभी</button>
+      <button data-filter="news" onclick="setFilter('news')">📰 न्यूज़</button>
+      <button data-filter="odysee" onclick="setFilter('odysee')">📺 वीडियो</button>
+      <button data-filter="text" onclick="setFilter('text')">💬 विचार</button>
+      <button data-filter="image" onclick="setFilter('image')">🖼️ फोटो</button>
+      <button data-filter="video" onclick="setFilter('video')">🎬 वीडियो (अपलोड)</button>
+    </div>
+
+    <!-- Feed -->
+    <div class="feed" id="feed">
+      <!-- Loading skeletons -->
+      <div class="skeleton"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line medium"></div></div>
+      <div class="skeleton"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line medium"></div></div>
+      <div class="skeleton"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line medium"></div></div>
+    </div>
+  </main>
+</div>
+
+<footer>© 2026 DainikState — झारखंड की आवाज़, अपना मंच 🌍<br>
+<a href="https://dainikstate.com" target="_blank" rel="noopener">dainikstate.com</a> से संचालित</footer>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="modal" onclick="closeModal()">
+  <button class="close-btn">✕</button>
+  <div id="modalContent"></div>
+</div>
+
+<!-- Auto-registration modal -->
+<div class="reg-overlay" id="regOverlay">
+  <div class="reg-modal">
+    <h2>👋 आपका स्वागत है <span style="color:#b71c1c;">DainikState</span> में!</h2>
+    <p>झारखंड की खबरें, वीडियो और आपके विचार — सब एक जगह।<br>शुरू करने के लिए अपना नाम बताएं:</p>
+    <input type="text" id="regName" placeholder="आपका नाम" maxlength="30" autofocus />
+    <button onclick="registerUser()">शुरू करें 🚀</button>
+    <button class="skip" onclick="registerAnonymous()">बेनाम जारी रखें</button>
+  </div>
+</div>
+
+<script>
+/* ====================================================
+   DainikState - Unified Feed App
+   ==================================================== */
+
+const API_BASE = '';
+let currentUser = null;
+let feed = [];  // Unified feed: news + videos + user posts
+let currentFilter = 'all';
+let currentFile = null;
+let isLoading = false;
+
+/* ====================================================
+   AUTO-REGISTRATION
+   ==================================================== */
+function checkRegistration() {
+  const saved = localStorage.getItem('dainikstate_user');
+  if (saved) {
+    currentUser = JSON.parse(saved);
+    applyUserBadge();
+    document.getElementById('regOverlay').classList.add('hidden');
+  } else {
+    document.getElementById('regOverlay').classList.remove('hidden');
+  }
+}
+
+function registerUser() {
+  const name = document.getElementById('regName').value.trim();
+  if (!name) { showToast('⚠️ कृपया अपना नाम दर्ज करें'); return; }
+  currentUser = {
+    id: 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+    name,
+    avatar: name[0].toUpperCase(),
+    registeredAt: Date.now(),
+  };
+  localStorage.setItem('dainikstate_user', JSON.stringify(currentUser));
+  applyUserBadge();
+  document.getElementById('regOverlay').classList.add('hidden');
+  showToast('✅ आपका DainikState में स्वागत है, ' + name + '!');
+}
+
+function registerAnonymous() {
+  currentUser = {
+    id: 'anon_' + Date.now(),
+    name: 'मेहमान_' + Math.floor(Math.random() * 9999),
+    avatar: 'G',
+    registeredAt: Date.now(),
+  };
+  localStorage.setItem('dainikstate_user', JSON.stringify(currentUser));
+  applyUserBadge();
+  document.getElementById('regOverlay').classList.add('hidden');
+  showToast('👤 बेनाम के रूप में जारी रखा');
+}
+
+function applyUserBadge() {
+  document.getElementById('uAvatar').textContent = currentUser.avatar;
+  document.getElementById('uName').textContent = currentUser.name;
+  document.getElementById('userBadge').style.display = 'flex';
+}
+
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+/* ====================================================
+   FEED LOADING
+   ==================================================== */
+async function loadFeed() {
+  if (isLoading) return;
+  isLoading = true;
+  try {
+    const res = await fetch(API_BASE + '/api/feed');
+    const data = await res.json();
+
+    // Convert news + videos to unified feed format
+    feed = [];
+
+    // Add news items
+    if (data.news?.items) {
+      data.news.items.forEach(n => {
+        feed.push({
+          id: 'news_' + n.link,
+          type: 'news',
+          source: 'DainikState News',
+          name: n.author || 'DainikState Desk',
+          text: n.title,
+          description: n.description,
+          media: n.thumbnail,
+          link: n.link,
+          time: n.pubDate,
+          likes: Math.floor(Math.random() * 30),
+          liked: false,
+          comments: [],
+          category: n.category,
+        });
+      });
+    }
+
+    // Add Odysee videos
+    if (data.videos?.items) {
+      data.videos.items.forEach(v => {
+        feed.push({
+          id: 'odysee_' + v.claim_id,
+          type: 'odysee',
+          source: 'Odysee Video',
+          name: 'DainikState',
+          text: v.title,
+          description: v.description,
+          media: v.thumbnail,
+          link: v.url,
+          time: v.release_time,
+          likes: v.views || 0,
+          liked: false,
+          comments: [],
+          views: v.views,
+          duration: v.duration,
+        });
+      });
+    }
+
+    // Load user posts from localStorage
+    const userPosts = JSON.parse(localStorage.getItem('dainikstate_posts') || '[]');
+    userPosts.forEach(p => {
+      p.source = p.type === 'odysee' ? 'Odysee Video' : (p.type === 'news' ? 'DainikState News' : null);
+      feed.push(p);
+    });
+
+    // Sort by time (newest first)
+    feed.sort((a, b) => (b.time || 0) - (a.time || 0));
+
+    renderFeed();
+  } catch (err) {
+    console.error('Feed load error:', err);
+    showToast('⚠️ फीड लोड नहीं हो सका');
+  } finally {
+    isLoading = false;
+  }
+}
+
+function refreshFeed() {
+  showToast('🔄 फीड रिफ्रेश हो रहा है...');
+  loadFeed();
+}
+
+/* ====================================================
+   RENDER FEED
+   ==================================================== */
+function renderFeed() {
+  const feedEl = document.getElementById('feed');
+  const filtered = currentFilter === 'all'
+    ? feed
+    : feed.filter(p => p.type === currentFilter);
+
+  if (filtered.length === 0) {
+    feedEl.innerHTML = '<div class="post" style="padding:30px;text-align:center;color:#65676b;">😔 इस category में अभी कुछ नहीं है।</div>';
+    return;
+  }
+
+  feedEl.innerHTML = filtered.map(p => renderPost(p)).join('');
+}
+
+function renderPost(p) {
+  const sortedComments = [...p.comments].sort((a, b) => b.likes - a.likes);
+  const topComment = sortedComments[0];
+  const initials = (p.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+  const timeText = typeof p.time === 'number' ? timeAgo(p.time) : p.time;
+
+  // Source badge
+  let sourceBadge = '';
+  if (p.type === 'news') sourceBadge = '<span class="source-badge news">📰 DainikState</span>';
+  else if (p.type === 'odysee') sourceBadge = '<span class="source-badge odysee">📺 Odysee</span>';
+  else sourceBadge = '<span class="source-badge user">💬 विचार</span>';
+
+  // Top comment band
+  let topCommentBandHtml = '';
+  if (topComment && topComment.likes > 0) {
+    const cInitials = (topComment.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+    topCommentBandHtml = `
+      <div class="top-comment-band">
+        <span class="tc-badge">🏆 BEST</span>
+        <div class="c-avatar">${cInitials}</div>
+        <div class="c-body">
+          <div class="c-name">${escapeHtml(topComment.name)}</div>
+          <div class="c-text">${escapeHtml(topComment.text)}</div>
+          <div class="c-stats">
+            <span class="like-btn" onclick="likeComment('${p.id}', '${escapeHtml(topComment.name).replace(/'/g, "\\'")}')">👍 ${topComment.likes} likes</span>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // Media
+  let mediaHtml = '';
+  if (p.type === 'news' && p.media) {
+    mediaHtml = `<div class="post-media"><img src="${escapeHtml(p.media)}" onerror="this.style.display='none'" /></div>`;
+  } else if (p.type === 'image' && p.media) {
+    mediaHtml = `<div class="post-media"><img src="${p.media}" onclick="openMedia('${p.id}')" /></div>`;
+  } else if (p.type === 'video' && p.media) {
+    mediaHtml = `<div class="post-media"><video src="${p.media}" controls></video></div>`;
+  } else if (p.type === 'odysee') {
+    const thumb = p.media || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 338"><rect fill="%23c2185b" width="600" height="338"/><text x="300" y="180" text-anchor="middle" fill="white" font-size="40">📺</text></svg>';
+    mediaHtml = `
+      <div class="odysee-card" onclick="openOdysee('${escapeHtml(p.link)}')">
+        <span class="odysee-watermark">odysee</span>
+        <img src="${escapeHtml(thumb)}" onerror="this.style.display='none'" />
+        <div class="play-icon">▶</div>
+        <div class="v-info">
+          <div class="v-title">${escapeHtml(p.text)}</div>
+          <div class="v-meta">${formatCount(p.views || 0)} views • Odysee पर देखें</div>
+        </div>
+      </div>`;
+  }
+
+  // Text body
+  let textHtml = '';
+  if (p.text) {
+    let text = escapeHtml(p.text);
+    if (p.link) text = `<a href="${escapeHtml(p.link)}" target="_blank" rel="noopener">${text}</a>`;
+    if (p.description) text += `<div style="color:#65676b;font-size:13px;margin-top:4px;">${escapeHtml(p.description)}</div>`;
+    textHtml = `<div class="post-text">${text}</div>`;
+  }
+
+  // Other comments
+  const otherComments = (topComment && topComment.likes > 0)
+    ? p.comments.filter(c => c !== topComment)
+    : p.comments;
+
+  const commentsHtml = p.comments.length === 0
+    ? '<div style="color:#65676b;font-size:12px;">पहला कमेंट करें 👇</div>'
+    : otherComments.map(c => {
+        const cInitials = (c.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+        return `
+          <div class="comment">
+            <div class="c-avatar">${cInitials}</div>
+            <div class="c-body">
+              <div class="c-name">${escapeHtml(c.name)}</div>
+              <div class="c-text">${escapeHtml(c.text)}</div>
+              <div class="c-actions">
+                <span class="like-btn" onclick="likeComment('${p.id}', '${escapeHtml(c.name).replace(/'/g, "\\'")}')">👍 लाइक (${c.likes})</span>
+                <span>💬 रिप्लाई</span>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+  return `
+    <div class="post" data-id="${p.id}">
+      <div class="post-header">
+        <div class="avatar">${initials}</div>
+        <div class="post-meta">
+          <div class="name">${escapeHtml(p.name)} ${sourceBadge}</div>
+          <div class="time">${timeText}${p.category ? ' • ' + escapeHtml(p.category) : ''}</div>
+        </div>
+      </div>
+      ${textHtml}
+      ${topCommentBandHtml}
+      ${mediaHtml}
+      <div class="post-actions">
+        <button class="${p.liked ? 'liked' : ''}" onclick="likePost('${p.id}')">
+          ${p.liked ? '❤️' : '🤍'} लाइक (${formatCount(p.likes)})
+        </button>
+        <button onclick="toggleComments('${p.id}')">💬 कमेंट (${p.comments.length})</button>
+        <button onclick="sharePost('${p.id}')">↗ शेयर</button>
+      </div>
+      <div class="comments-section" id="comments-${p.id}">
+        <h4>${topComment && topComment.likes > 0 ? 'अन्य कमेंट्स' : 'कमेंट्स'}</h4>
+        ${commentsHtml}
+        <div class="new-comment">
+          <input type="text" id="cname-${p.id}" placeholder="नाम" value="${escapeHtml(currentUser?.name || '')}" />
+          <input type="text" id="ctext-${p.id}" placeholder="कमेंट लिखें..." onkeydown="if(event.key==='Enter') addComment('${p.id}')" />
+          <button onclick="addComment('${p.id}')">भेजें</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function formatCount(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toString();
+}
+
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60_000) return 'अभी अभी';
+  if (diff < 3_600_000) return Math.floor(diff / 60_000) + ' मिनट पहले';
+  if (diff < 86_400_000) return Math.floor(diff / 3_600_000) + ' घंटे पहले';
+  if (diff < 604_800_000) return Math.floor(diff / 86_400_000) + ' दिन पहले';
+  return Math.floor(diff / 604_800_000) + ' हफ़्ते पहले';
+}
+
+function openOdysee(url) {
+  window.open(url, '_blank', 'noopener,noreferrer');
+  showToast('📺 Odysee पर वीडियो खुल रहा है...');
+}
+
+/* ====================================================
+   USER ACTIONS
+   ==================================================== */
+function likePost(id) {
+  const p = feed.find(x => x.id === id);
+  if (!p) return;
+  p.liked = !p.liked;
+  p.likes += p.liked ? 1 : -1;
+  if (p.id.toString().startsWith('user_')) saveUserPosts();
+  renderFeed();
+  showToast(p.liked ? '❤️ लाइक किया!' : '💔 लाइक हटाया');
+}
+
+function likeComment(postId, cName) {
+  const p = feed.find(x => x.id === postId);
+  if (!p) return;
+  const c = p.comments.find(x => x.name === cName);
+  if (!c) return;
+  c.likes += 1;
+  if (p.id.toString().startsWith('user_')) saveUserPosts();
+  renderFeed();
+  showToast(`👍 कमेंट को लाइक किया — अब वो BEST COMMENT बैनर में दिखेगा!`);
+  setTimeout(() => {
+    const el = document.querySelector(`[data-id="${postId}"] .top-comment-band`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
+
+function addComment(postId) {
+  const nameEl = document.getElementById(`cname-${postId}`);
+  const textEl = document.getElementById(`ctext-${postId}`);
+  const name = (nameEl?.value || '').trim() || currentUser?.name || 'मेहमान';
+  const text = (textEl?.value || '').trim();
+  if (!text) { showToast('⚠️ कमेंट खाली नहीं हो सकता'); return; }
+  const p = feed.find(x => x.id === postId);
+  if (!p) return;
+  p.comments.push({ name, text, likes: 0 });
+  if (p.id.toString().startsWith('user_')) saveUserPosts();
+  textEl.value = '';
+  renderFeed();
+  showToast('💬 कमेंट जुड़ गया!');
+}
+
+function toggleComments(id) {
+  const el = document.getElementById(`comments-${id}`);
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const input = document.getElementById(`ctext-${id}`);
+  if (input) setTimeout(() => input.focus(), 400);
+}
+
+function sharePost(id) {
+  const p = feed.find(x => x.id === id);
+  if (!p) return;
+  const text = p.text || `${p.name} का पोस्ट`;
+  const url = p.link || location.href;
+  if (navigator.share) {
+    navigator.share({ title: 'DainikState', text, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(`${text} - ${url}`);
+    showToast('📋 लिंक कॉपी हो गया!');
+  }
+}
+
+function setFilter(type) {
+  currentFilter = type;
+  document.querySelectorAll('.filter-bar button').forEach(b => b.classList.remove('active'));
+  const active = document.querySelector(`.filter-bar button[data-filter="${type}"]`);
+  if (active) active.classList.add('active');
+  renderFeed();
+}
+
+/* ====================================================
+   USER POSTS
+   ==================================================== */
+function handleFile(e, type) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 25 * 1024 * 1024) { showToast('❌ फाइल 25MB से कम होनी चाहिए'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    currentFile = { type, dataUrl: ev.target.result };
+    renderFilePreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderFilePreview() {
+  const p = document.getElementById('filePreview');
+  p.innerHTML = '';
+  if (!currentFile) return;
+  if (currentFile.type === 'image') {
+    const img = document.createElement('img');
+    img.src = currentFile.dataUrl;
+    p.appendChild(img);
+  } else {
+    const v = document.createElement('video');
+    v.src = currentFile.dataUrl; v.controls = true;
+    p.appendChild(v);
+  }
+  const rm = document.createElement('button');
+  rm.textContent = '❌ हटाएं';
+  rm.style.cssText = 'margin-top:6px;background:#e0245e;color:#fff;border:none;padding:4px 12px;border-radius:12px;cursor:pointer;';
+  rm.onclick = () => { currentFile = null; document.getElementById('filePreview').innerHTML = '';
+    document.getElementById('imgInput').value = ''; document.getElementById('vidInput').value = ''; };
+  p.appendChild(rm);
+}
+
+function addPost() {
+  const text = document.getElementById('postText').value.trim();
+  if (!text && !currentFile) { showToast('⚠️ कुछ तो लिखें या फाइल चुनें'); return; }
+  const type = currentFile ? currentFile.type : 'text';
+  const media = currentFile ? currentFile.dataUrl : null;
+
+  const newPost = {
+    id: 'user_' + Date.now(),
+    type,
+    name: currentUser.name,
+    text,
+    media,
+    time: Date.now(),
+    likes: 0,
+    liked: false,
+    comments: [],
+  };
+
+  feed.unshift(newPost);
+  saveUserPosts();
+  document.getElementById('postText').value = '';
+  currentFile = null;
+  document.getElementById('filePreview').innerHTML = '';
+  document.getElementById('imgInput').value = '';
+  document.getElementById('vidInput').value = '';
+  renderFeed();
+  showToast('✅ पोस्ट सफलतापूर्वक जुड़ गया!');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function saveUserPosts() {
+  const userPosts = feed.filter(p => p.id.toString().startsWith('user_'));
+  localStorage.setItem('dainikstate_posts', JSON.stringify(userPosts));
+}
+
+function openMedia(id) {
+  const p = feed.find(x => x.id === id);
+  if (!p || !p.media) return;
+  document.getElementById('modalContent').innerHTML = `<img src="${p.media}" />`;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+/* ====================================================
+   BOOT
+   ==================================================== */
+checkRegistration();
+loadFeed();
+
+// Enter key in registration
+document.getElementById('regName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') registerUser();
+});
+
+// Auto-refresh every 5 minutes
+setInterval(() => {
+  if (!document.hidden) loadFeed();
+}, 5 * 60 * 1000);
+</script>
+
+</body>
+</html>
