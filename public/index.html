@@ -3,212 +3,239 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DainikState — कमेंट करें, आवाज़ सुनें, जुड़ें</title>
+<title>DainikState — राज्य की आवाज़</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
   body { background: #f0f2f5; color: #1c1e21; }
 
-  /* ====== HEADER ====== */
+  /* ====== HEADER (with logo) ====== */
   header.topbar {
     position: sticky; top: 0; z-index: 100;
-    background: linear-gradient(90deg, #b71c1c, #e53935);
-    color: #fff; padding: 10px 16px;
+    background: #fff; padding: 8px 12px;
     display: flex; align-items: center; justify-content: space-between;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    border-bottom: 3px solid #b71c1c;
   }
-  header.topbar h1 { font-size: 22px; font-weight: 800; }
-  header.topbar h1 span { color: #ffd54f; }
-  .topbar-actions { display: flex; gap: 8px; align-items: center; }
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .header-logo {
+    width: 48px; height: 48px; border-radius: 8px; object-fit: cover;
+  }
+  .header-titles { line-height: 1.1; }
+  .header-titles .main-title {
+    font-size: 18px; font-weight: 800; color: #b71c1c;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .header-titles .sub-title { font-size: 11px; color: #65676b; font-weight: 500; }
+
+  .topbar-actions { display: flex; gap: 6px; align-items: center; }
   .topbar-actions button {
-    background: rgba(255,255,255,0.2); border: none; color: #fff;
-    padding: 7px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px;
+    background: #f0f2f5; border: none; color: #1c1e21;
+    padding: 7px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 12px;
   }
-  .topbar-actions button:hover { background: rgba(255,255,255,0.35); }
+  .topbar-actions button:hover { background: #e4e6eb; }
   .user-badge {
-    display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15);
-    padding: 3px 12px 3px 3px; border-radius: 20px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; background: #fff3cd;
+    padding: 3px 10px 3px 3px; border-radius: 20px; cursor: pointer;
+    border: 1px solid #ffd54f;
   }
-  .user-badge:hover { background: rgba(255,255,255,0.25); }
   .user-badge .uavatar {
-    width: 30px; height: 30px; border-radius: 50%;
-    background: #ffd54f; color: #b71c1c; display: flex; align-items: center;
-    justify-content: center; font-weight: 700; font-size: 13px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #b71c1c; color: #ffd54f; display: flex; align-items: center;
+    justify-content: center; font-weight: 700; font-size: 12px;
   }
-  .user-badge .uname { font-size: 13px; font-weight: 600; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .user-badge .ubadge { font-size: 14px; }
+  .user-badge .uname { font-size: 12px; font-weight: 600; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .user-badge .ubadge { font-size: 13px; }
 
   /* ====== CONTAINER ====== */
-  .container { max-width: 720px; margin: 16px auto; padding: 0 12px; }
+  .container { max-width: 720px; margin: 14px auto; padding: 0 12px; }
 
   /* ====== REGISTRATION ====== */
   .reg-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
     display: flex; align-items: center; justify-content: center; z-index: 2000;
     backdrop-filter: blur(4px);
   }
   .reg-overlay.hidden { display: none; }
   .reg-modal {
-    background: #fff; border-radius: 16px; padding: 32px; max-width: 420px; width: 90%;
+    background: #fff; border-radius: 16px; padding: 28px 24px; max-width: 420px; width: 90%;
     text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     animation: pop 0.4s ease;
   }
   @keyframes pop { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .reg-modal h2 { color: #b71c1c; margin-bottom: 8px; font-size: 22px; }
-  .reg-modal p { color: #65676b; margin-bottom: 20px; font-size: 14px; }
+  .reg-modal img { width: 120px; height: 120px; margin-bottom: 12px; }
+  .reg-modal h2 { color: #b71c1c; margin-bottom: 6px; font-size: 20px; }
+  .reg-modal .tagline { color: #ff6f00; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+  .reg-modal p { color: #65676b; margin-bottom: 16px; font-size: 13px; }
   .reg-modal input {
-    width: 100%; padding: 12px; border: 2px solid #ccd0d5; border-radius: 8px;
-    font-size: 15px; margin-bottom: 12px;
+    width: 100%; padding: 11px; border: 2px solid #ccd0d5; border-radius: 8px;
+    font-size: 15px; margin-bottom: 10px;
   }
   .reg-modal input:focus { outline: none; border-color: #b71c1c; }
+  .reg-modal select {
+    width: 100%; padding: 11px; border: 2px solid #ccd0d5; border-radius: 8px;
+    font-size: 15px; margin-bottom: 12px; background: #fff;
+  }
+  .reg-modal select:focus { outline: none; border-color: #b71c1c; }
+  .reg-modal label { font-size: 12px; color: #65676b; display: block; text-align: left; margin-bottom: 4px; font-weight: 600; }
   .reg-modal button {
-    width: 100%; padding: 12px; background: #b71c1c; color: #fff;
+    width: 100%; padding: 11px; background: #b71c1c; color: #fff;
     border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;
   }
   .reg-modal button:hover { background: #9a1313; }
-  .reg-modal .skip { background: transparent; color: #65676b; margin-top: 8px; }
+  .reg-modal .skip { background: transparent; color: #65676b; margin-top: 6px; }
   .reg-modal .skip:hover { background: #f0f2f5; }
 
-  /* ====== STATS STRIP (comment-focused) ====== */
-  .stats-strip {
+  /* ====== DISTRICT SELECTOR (top) ====== */
+  .district-bar {
     background: linear-gradient(135deg, #b71c1c, #e53935);
-    color: #fff; border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
-    display: flex; justify-content: space-around; align-items: center;
+    color: #fff; border-radius: 12px; padding: 10px 14px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
     box-shadow: 0 2px 8px rgba(183, 28, 28, 0.3);
   }
-  .stats-item { text-align: center; flex: 1; }
-  .stats-item .num { font-size: 20px; font-weight: 800; line-height: 1; }
-  .stats-item .lbl { font-size: 11px; opacity: 0.9; margin-top: 4px; }
-  .stats-item .emoji { font-size: 22px; }
+  .district-bar label { font-size: 13px; font-weight: 600; }
+  .district-bar select {
+    flex: 1; min-width: 140px; padding: 6px 10px; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 600; background: #fff; color: #b71c1c; cursor: pointer;
+  }
+  .district-bar .info { font-size: 12px; opacity: 0.9; }
 
-  /* ====== COMPOSER (with voice!) ====== */
+  /* ====== STATS STRIP ====== */
+  .stats-strip {
+    background: linear-gradient(135deg, #fff3cd, #ffe082);
+    border-radius: 12px; padding: 10px; margin-bottom: 12px;
+    display: flex; justify-content: space-around; align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .stats-item { text-align: center; flex: 1; }
+  .stats-item .num { font-size: 18px; font-weight: 800; line-height: 1; color: #b71c1c; }
+  .stats-item .lbl { font-size: 10px; color: #65676b; margin-top: 3px; font-weight: 600; }
+  .stats-item .emoji { font-size: 18px; }
+
+  /* ====== COMPOSER ====== */
   .composer {
     background: #fff; border-radius: 12px; padding: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 12px;
   }
-  .composer h3 { color: #b71c1c; margin-bottom: 10px; font-size: 16px; }
+  .composer h3 { color: #b71c1c; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 6px; }
   .composer textarea {
     width: 100%; min-height: 60px; padding: 10px; border-radius: 8px;
     border: 1px solid #ccd0d5; resize: vertical; font-size: 15px;
     font-family: inherit;
   }
   .composer textarea:focus { outline: none; border-color: #b71c1c; }
-  .composer-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; align-items: center; }
+  .composer-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-items: center; }
   .composer-row label, .composer-row button.action {
-    background: #f0f2f5; padding: 6px 12px; border-radius: 20px; cursor: pointer;
-    font-size: 13px; color: #b71c1c; font-weight: 600; border: none;
+    background: #f0f2f5; padding: 5px 10px; border-radius: 18px; cursor: pointer;
+    font-size: 12px; color: #b71c1c; font-weight: 600; border: none;
   }
   .composer-row label:hover, .composer-row button.action:hover { background: #e4e6eb; }
   .composer-row input[type=file] { display: none; }
   .composer-row .post-btn {
-    background: #b71c1c; color: #fff; border: none; padding: 8px 18px;
-    border-radius: 20px; font-weight: 600; cursor: pointer; margin-left: auto;
+    background: #b71c1c; color: #fff; border: none; padding: 7px 16px;
+    border-radius: 18px; font-weight: 600; cursor: pointer; margin-left: auto; font-size: 13px;
   }
   .composer-row .post-btn:hover { background: #9a1313; }
 
-  /* District selector */
-  .district-selector {
-    margin: 10px 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-  }
-  .district-selector label { font-size: 12px; color: #65676b; font-weight: 600; }
-  .district-selector select {
-    padding: 6px 10px; border: 1px solid #ccd0d5; border-radius: 8px;
-    font-size: 13px; background: #fff; cursor: pointer;
-  }
-
-  /* Voice recorder */
   .voice-recorder {
     background: #fff3cd; border-radius: 8px; padding: 10px;
     margin-top: 8px; display: none; align-items: center; gap: 10px;
   }
   .voice-recorder.recording { display: flex; }
   .voice-recorder .pulse {
-    width: 12px; height: 12px; border-radius: 50%; background: #e0245e;
+    width: 10px; height: 10px; border-radius: 50%; background: #e0245e;
     animation: pulse-anim 1s infinite;
   }
   @keyframes pulse-anim { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } }
-  .voice-recorder .duration { font-weight: 700; color: #b71c1c; }
-  .voice-recorder .stop-btn { background: #e0245e; color: #fff; border: none; padding: 4px 12px; border-radius: 12px; cursor: pointer; font-size: 12px; margin-left: auto; }
+  .voice-recorder .duration { font-weight: 700; color: #b71c1c; font-size: 13px; }
+  .voice-recorder .stop-btn { background: #e0245e; color: #fff; border: none; padding: 4px 10px; border-radius: 12px; cursor: pointer; font-size: 11px; margin-left: auto; }
 
   .file-preview { margin-top: 8px; }
-  .file-preview img, .file-preview video { max-width: 100%; max-height: 200px; border-radius: 8px; }
+  .file-preview img, .file-preview video { max-width: 100%; max-height: 180px; border-radius: 8px; }
   .file-preview audio { width: 100%; margin-top: 6px; }
 
   /* ====== FILTER BAR ====== */
   .filter-bar {
-    background: #fff; border-radius: 12px; padding: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 14px;
-    display: flex; gap: 6px; flex-wrap: wrap; overflow-x: auto;
+    background: #fff; border-radius: 12px; padding: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 12px;
+    display: flex; gap: 5px; flex-wrap: wrap; overflow-x: auto;
   }
   .filter-bar button {
-    background: #f0f2f5; border: none; padding: 7px 14px;
-    border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px;
+    background: #f0f2f5; border: none; padding: 6px 12px;
+    border-radius: 18px; cursor: pointer; font-weight: 600; font-size: 12px;
     white-space: nowrap; color: #65676b;
   }
   .filter-bar button.active { background: #b71c1c; color: #fff; }
   .filter-bar button:hover:not(.active) { background: #e4e6eb; }
 
-  /* ====== POSTS (Comment-focused) ====== */
-  .feed { display: flex; flex-direction: column; gap: 14px; }
+  /* ====== POSTS ====== */
+  .feed { display: flex; flex-direction: column; gap: 12px; }
   .post {
     background: #fff; border-radius: 12px; padding: 0;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     overflow: hidden; transition: transform 0.2s;
+    border-left: 4px solid transparent;
   }
   .post:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .post.local-news { border-left-color: #ff6f00; background: linear-gradient(180deg, #fff8e1 0%, #fff 60%); }
+  .post.local-news::before {
+    content: '📍 आपके ज़िले से'; display: block; padding: 4px 14px;
+    background: #ff6f00; color: #fff; font-size: 11px; font-weight: 700;
+  }
 
   .source-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 2px 8px; border-radius: 10px; font-size: 10px;
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 7px; border-radius: 10px; font-size: 9px;
     font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase;
     margin-left: 4px;
   }
   .source-badge.news { background: #fff3cd; color: #b71c1c; }
+  .source-badge.youtube { background: #ffe0e0; color: #c62828; }
   .source-badge.odysee { background: #fde7f3; color: #c2185b; }
   .source-badge.user { background: #e3f2fd; color: #1565c0; }
   .source-badge.voice { background: #f3e5f5; color: #6a1b9a; }
 
   .district-tag {
-    display: inline-block; background: #e8f5e9; color: #2e7d32;
-    padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;
+    display: inline-block; background: #ff6f00; color: #fff;
+    padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700;
     margin-left: 4px;
   }
 
   .post-header {
-    display: flex; align-items: center; gap: 10px; padding: 14px 14px 8px;
+    display: flex; align-items: center; gap: 10px; padding: 12px 14px 6px;
   }
   .avatar {
-    width: 42px; height: 42px; border-radius: 50%;
+    width: 40px; height: 40px; border-radius: 50%;
     background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff; display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 18px; flex-shrink: 0;
+    font-weight: 700; font-size: 16px; flex-shrink: 0;
   }
   .post-meta { flex: 1; min-width: 0; }
-  .post-meta .name { font-weight: 600; font-size: 14px; display: flex; align-items: center; flex-wrap: wrap; gap: 2px; }
-  .post-meta .time { font-size: 12px; color: #65676b; }
+  .post-meta .name { font-weight: 600; font-size: 13px; display: flex; align-items: center; flex-wrap: wrap; gap: 2px; }
+  .post-meta .time { font-size: 11px; color: #65676b; }
 
-  .post-text { padding: 0 14px 8px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; font-size: 15px; }
+  .post-text { padding: 0 14px 6px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; font-size: 14px; }
   .post-text a { color: #b71c1c; text-decoration: none; font-weight: 600; }
   .post-text a:hover { text-decoration: underline; }
 
-  /* AI Summary box */
+  /* AI Summary */
   .ai-summary {
     background: linear-gradient(135deg, #e3f2fd, #bbdefb);
     border-left: 4px solid #1976d2; border-radius: 8px;
-    padding: 10px 12px; margin: 0 14px 10px; font-size: 13px;
+    padding: 8px 12px; margin: 0 14px 8px; font-size: 12px;
   }
   .ai-summary .ai-label {
     font-size: 10px; color: #1976d2; font-weight: 700; text-transform: uppercase;
-    margin-bottom: 4px; letter-spacing: 0.5px;
+    margin-bottom: 3px; letter-spacing: 0.5px;
   }
   .ai-summary .ai-text { color: #1c1e21; line-height: 1.4; }
-  .ai-summary .ai-points { margin-top: 6px; padding-left: 16px; }
-  .ai-summary .ai-points li { font-size: 12px; color: #424242; margin-bottom: 2px; }
+  .ai-summary .ai-points { margin-top: 4px; padding-left: 16px; }
+  .ai-summary .ai-points li { font-size: 11px; color: #424242; margin-bottom: 1px; }
 
   /* Top comment band */
   .top-comment-band {
     background: linear-gradient(135deg, #fff3cd 0%, #ffe082 100%);
     border: 2px solid #ffb300; border-radius: 12px;
-    padding: 10px 14px; margin: 0 14px 10px;
+    padding: 10px 12px; margin: 0 14px 8px;
     display: flex; gap: 10px; align-items: flex-start;
     box-shadow: 0 0 20px rgba(255, 179, 0, 0.4);
     animation: glow 2s ease-in-out infinite alternate;
@@ -218,69 +245,69 @@
   .top-comment-band .tc-badge {
     position: absolute; top: -10px; left: 14px;
     background: #ff6f00; color: #fff; padding: 2px 10px;
-    border-radius: 10px; font-size: 11px; font-weight: 700;
+    border-radius: 10px; font-size: 10px; font-weight: 700;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
   .top-comment-band .c-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
+    width: 32px; height: 32px; border-radius: 50%;
     background: #ff6f00; color: #fff; display: flex;
-    align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+    align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
     border: 2px solid #fff;
   }
   .top-comment-band .c-body { flex: 1; min-width: 0; }
-  .top-comment-band .c-name { font-weight: 700; font-size: 14px; color: #e65100; }
-  .top-comment-band .c-text { font-size: 14px; margin: 2px 0; color: #1c1e21; }
-  .top-comment-band .c-stats { font-size: 12px; color: #e65100; font-weight: 600; }
+  .top-comment-band .c-name { font-weight: 700; font-size: 13px; color: #e65100; }
+  .top-comment-band .c-text { font-size: 13px; margin: 2px 0; color: #1c1e21; }
+  .top-comment-band .c-stats { font-size: 11px; color: #e65100; font-weight: 600; }
 
-  /* Voice comment indicator */
   .voice-comment-indicator {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: #f3e5f5; color: #6a1b9a; padding: 2px 6px; border-radius: 8px;
-    font-size: 11px; font-weight: 600; margin-right: 6px;
+    display: inline-flex; align-items: center; gap: 3px;
+    background: #f3e5f5; color: #6a1b9a; padding: 1px 5px; border-radius: 6px;
+    font-size: 10px; font-weight: 600; margin-right: 4px;
   }
 
   /* Media */
   .post-media { position: relative; background: #000; }
-  .post-media img, .post-media video { width: 100%; max-height: 500px; object-fit: cover; display: block; }
-  .post-media .image-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2px; }
+  .post-media img, .post-media video { width: 100%; max-height: 450px; object-fit: cover; display: block; }
+  .post-media .image-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 2px; }
 
-  /* Odysee video card */
-  .odysee-card {
+  .odysee-card, .youtube-card {
     background: #000; overflow: hidden;
     position: relative; cursor: pointer; aspect-ratio: 16/9;
   }
-  .odysee-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
-  .odysee-card:hover img { opacity: 1; }
-  .odysee-card .play-icon {
+  .odysee-card img, .youtube-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+  .odysee-card:hover img, .youtube-card:hover img { opacity: 1; }
+  .play-icon {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 60px; height: 60px; background: rgba(255,255,255,0.92);
+    width: 56px; height: 56px; background: rgba(255,255,255,0.92);
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 24px; color: #c2185b; padding-left: 4px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    font-size: 22px; padding-left: 3px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
   }
-  .odysee-card .v-info {
+  .odysee-card .play-icon { color: #c2185b; }
+  .youtube-card .play-icon { color: #c62828; }
+  .odysee-card .v-info, .youtube-card .v-info {
     position: absolute; bottom: 0; left: 0; right: 0;
     background: linear-gradient(transparent, rgba(0,0,0,0.95));
-    color: #fff; padding: 36px 16px 14px;
+    color: #fff; padding: 30px 14px 10px;
   }
-  .odysee-card .v-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; line-height: 1.3; }
-  .odysee-card .v-meta { font-size: 12px; opacity: 0.85; }
-  .odysee-card .odysee-watermark {
+  .odysee-card .v-title, .youtube-card .v-title { font-weight: 700; font-size: 14px; margin-bottom: 3px; line-height: 1.3; }
+  .odysee-card .v-meta, .youtube-card .v-meta { font-size: 11px; opacity: 0.85; }
+  .odysee-card .odysee-watermark, .youtube-card .youtube-watermark {
     position: absolute; top: 10px; right: 10px;
-    background: rgba(0,0,0,0.65); color: #fff;
-    padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700;
+    background: rgba(0,0,0,0.7); color: #fff;
+    padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
   }
+  .youtube-card .youtube-watermark { background: #c62828; }
 
   /* COMMENT-FOCUSED ACTION BAR */
   .post-actions {
-    display: flex; gap: 4px; padding: 6px 8px;
+    display: flex; gap: 4px; padding: 4px 6px;
     border-top: 1px solid #e4e6eb;
   }
   .post-actions button {
-    flex: 1; background: transparent; border: none; padding: 8px;
-    border-radius: 8px; cursor: pointer; color: #65676b; font-weight: 600;
-    font-size: 13px; transition: background 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 4px;
+    flex: 1; background: transparent; border: none; padding: 7px;
+    border-radius: 6px; cursor: pointer; color: #65676b; font-weight: 600;
+    font-size: 12px; transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 3px;
   }
   .post-actions button:hover { background: #f0f2f5; }
   .post-actions button.liked { color: #e0245e; }
@@ -290,139 +317,129 @@
   }
   .post-actions button.comment-cta:hover { background: linear-gradient(135deg, #9a1313, #c62828); }
   .post-actions button .count {
-    background: rgba(255,255,255,0.25); padding: 1px 6px; border-radius: 8px;
-    font-size: 11px; min-width: 18px; text-align: center;
+    background: rgba(255,255,255,0.3); padding: 1px 5px; border-radius: 8px;
+    font-size: 10px; min-width: 16px; text-align: center;
   }
   .post-actions button:not(.comment-cta) .count {
     background: #f0f2f5; color: #65676b;
   }
 
   /* Comments */
-  .comments-section { padding: 8px 14px 14px; border-top: 1px solid #e4e6eb; }
+  .comments-section { padding: 8px 14px 12px; border-top: 1px solid #e4e6eb; }
   .comments-section h4 {
-    font-size: 13px; color: #65676b; margin-bottom: 8px;
+    font-size: 12px; color: #65676b; margin-bottom: 6px;
     display: flex; align-items: center; justify-content: space-between;
   }
   .comment {
-    background: #f0f2f5; border-radius: 14px; padding: 8px 12px; margin-bottom: 6px;
-    display: flex; gap: 8px; align-items: flex-start;
+    background: #f0f2f5; border-radius: 14px; padding: 7px 10px; margin-bottom: 5px;
+    display: flex; gap: 7px; align-items: flex-start;
   }
   .comment .c-avatar {
-    width: 28px; height: 28px; border-radius: 50%;
+    width: 26px; height: 26px; border-radius: 50%;
     background: #b71c1c; color: #fff; display: flex;
-    align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;
+    align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;
   }
   .comment.voice-comment { background: #f3e5f5; }
   .comment .c-body { flex: 1; min-width: 0; }
-  .comment .c-name { font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 4px; }
-  .comment .c-text { font-size: 14px; }
-  .comment audio { width: 100%; max-width: 280px; height: 32px; margin-top: 4px; }
-  .comment .c-actions {
-    display: flex; gap: 12px; margin-top: 4px; font-size: 12px; color: #65676b;
-  }
+  .comment .c-name { font-weight: 600; font-size: 11px; }
+  .comment .c-text { font-size: 13px; }
+  .comment audio { width: 100%; max-width: 240px; height: 30px; margin-top: 3px; }
+  .comment .c-actions { display: flex; gap: 10px; margin-top: 3px; font-size: 11px; color: #65676b; }
   .comment .c-actions span { cursor: pointer; }
   .comment .c-actions .like-btn.liked { color: #e0245e; font-weight: 700; }
   .new-comment {
-    display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap;
+    display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap;
   }
   .new-comment input[type="text"] {
-    flex: 1; padding: 7px 12px; border: 1px solid #ccd0d5; border-radius: 20px;
-    font-size: 13px; min-width: 100px;
+    flex: 1; padding: 6px 10px; border: 1px solid #ccd0d5; border-radius: 18px;
+    font-size: 12px; min-width: 80px;
   }
   .new-comment input[type="text"]:focus { outline: none; border-color: #b71c1c; }
   .new-comment button {
-    background: #b71c1c; color: #fff; border: none; padding: 6px 14px;
-    border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px;
+    background: #b71c1c; color: #fff; border: none; padding: 5px 12px;
+    border-radius: 18px; cursor: pointer; font-weight: 600; font-size: 12px;
   }
   .new-comment .voice-cmt-btn {
-    background: #6a1b9a; padding: 6px 10px; border-radius: 50%;
-    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    background: #6a1b9a; padding: 5px 8px; border-radius: 50%;
+    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
   }
   .new-comment .voice-cmt-btn.recording { background: #e0245e; animation: pulse-anim 1s infinite; }
 
-  /* Comment empty state */
   .comment-empty {
-    text-align: center; padding: 12px; color: #b71c1c; font-size: 13px;
-    background: #fff5f5; border-radius: 8px; border: 1px dashed #b71c1c;
+    text-align: center; padding: 10px; color: #b71c1c; font-size: 12px;
+    background: #fff5f5; border-radius: 6px; border: 1px dashed #b71c1c;
   }
-  .comment-empty strong { display: block; margin-bottom: 4px; font-size: 14px; }
+  .comment-empty strong { display: block; margin-bottom: 3px; font-size: 13px; }
 
-  /* Toast & Modal */
   .toast {
     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    background: #1c1e21; color: #fff; padding: 10px 20px; border-radius: 20px;
-    font-size: 14px; z-index: 1500; opacity: 0; transition: opacity 0.3s;
+    background: #1c1e21; color: #fff; padding: 10px 18px; border-radius: 20px;
+    font-size: 13px; z-index: 1500; opacity: 0; transition: opacity 0.3s;
     max-width: 90%; text-align: center;
   }
   .toast.show { opacity: 1; }
-  .modal {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-    display: none; align-items: center; justify-content: center; z-index: 1000;
-  }
-  .modal.open { display: flex; }
-  .modal img { max-width: 95%; max-height: 95%; border-radius: 8px; }
-  .modal .close-btn {
-    position: absolute; top: 16px; right: 16px; background: #fff; border: none;
-    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 18px; font-weight: 700;
-  }
 
-  /* Skeleton */
   .skeleton {
     background: #fff; border-radius: 12px; padding: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 12px;
     animation: pulse 1.5s ease-in-out infinite;
   }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
   .skeleton-line { background: #e4e6eb; border-radius: 4px; height: 12px; margin-bottom: 8px; }
 
-  /* Leaderboard */
   .leaderboard-card {
     background: linear-gradient(135deg, #fff3cd, #ffe082);
-    border-radius: 12px; padding: 14px; margin-bottom: 14px;
+    border-radius: 12px; padding: 12px; margin-bottom: 12px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
-  .leaderboard-card h3 { color: #b71c1c; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-  .lb-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
-  .lb-row:last-child { border-bottom: none; }
-  .lb-rank { font-weight: 800; font-size: 16px; min-width: 30px; }
-  .lb-rank.gold { color: #ff6f00; }
-  .lb-rank.silver { color: #757575; }
-  .lb-rank.bronze { color: #a1887f; }
-  .lb-name { flex: 1; font-weight: 600; }
-  .lb-count { font-size: 12px; color: #65676b; }
-  .lb-badge { font-size: 16px; }
+  .leaderboard-card h3 { color: #b71c1c; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-size: 14px; }
+  .lb-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .lb-rank { font-weight: 800; font-size: 14px; min-width: 28px; }
+  .lb-name { flex: 1; font-weight: 600; font-size: 13px; }
+  .lb-count { font-size: 11px; color: #65676b; }
 
-  /* FAB */
   .fab {
     position: fixed; bottom: 24px; right: 24px;
-    width: 56px; height: 56px; border-radius: 50%;
+    width: 52px; height: 52px; border-radius: 50%;
     background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff; border: none; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    font-size: 28px; cursor: pointer; z-index: 99;
-    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; cursor: pointer; z-index: 99;
   }
   .fab:hover { transform: scale(1.1); }
 
-  footer { text-align: center; padding: 24px; color: #65676b; font-size: 12px; }
+  footer { text-align: center; padding: 20px; color: #65676b; font-size: 12px; }
 </style>
 </head>
 <body>
 
 <header class="topbar">
-  <h1>📰 <span>Dainik</span>State</h1>
+  <div class="header-left">
+    <img src="/images/logo.png" alt="DainikState" class="header-logo" />
+    <div class="header-titles">
+      <div class="main-title">दैनिक <span style="color:#ff6f00;">STATE</span></div>
+      <div class="sub-title">राज्य की आवाज़</div>
+    </div>
+  </div>
   <div class="topbar-actions">
     <div class="user-badge" id="userBadge" style="display:none;" onclick="openMyProfile()">
       <div class="uavatar" id="uAvatar">U</div>
       <div class="uname" id="uName">User</div>
       <div class="ubadge" id="uBadge"></div>
     </div>
-    <button onclick="scrollToTop()">⬆ Top</button>
+    <button onclick="scrollToTop()">⬆</button>
     <button onclick="refreshFeed()" title="Refresh">🔄</button>
   </div>
 </header>
 
 <div class="container">
   <main>
+    <!-- District selector (top priority) -->
+    <div class="district-bar" id="districtBar" style="display:none;">
+      <label>📍 आपका ज़िला:</label>
+      <select id="userDistrict" onchange="onDistrictChange()"><option value="">सभी जगह की खबरें</option></select>
+      <span class="info" id="localCount"></span>
+    </div>
+
     <!-- Comment-focused stats -->
     <div class="stats-strip" id="statsStrip">
       <div class="stats-item"><div class="emoji">💬</div><div class="num" id="statComments">0</div><div class="lbl">कमेंट्स</div></div>
@@ -441,10 +458,6 @@
     <div class="composer">
       <h3>✍️ अपना विचार साझा करें</h3>
       <textarea id="postText" placeholder="क्या सोच रहे हैं? कमेंट करें, बहस करें, जुड़ें!"></textarea>
-      <div class="district-selector">
-        <label>📍 ज़िला:</label>
-        <select id="userDistrict"><option value="">चुनें (optional)</option></select>
-      </div>
       <div class="voice-recorder" id="voiceRecorder">
         <div class="pulse"></div>
         <span>रिकॉर्डिंग हो रही है...</span>
@@ -467,39 +480,40 @@
     <div class="filter-bar">
       <button class="active" data-filter="all" onclick="setFilter('all')">🌐 सभी</button>
       <button data-filter="news" onclick="setFilter('news')">📰 न्यूज़</button>
-      <button data-filter="odysee" onclick="setFilter('odysee')">📺 वीडियो</button>
+      <button data-filter="youtube" onclick="setFilter('youtube')">📹 YouTube</button>
+      <button data-filter="odysee" onclick="setFilter('odysee')">📺 Odysee</button>
       <button data-filter="text" onclick="setFilter('text')">💬 विचार</button>
-      <button data-filter="image" onclick="setFilter('image')">🖼️ फोटो</button>
-      <button data-filter="video" onclick="setFilter('video')">🎬 वीडियो (अपलोड)</button>
-      <button data-filter="voice" onclick="setFilter('voice')">🎤 वॉइस पोस्ट</button>
+      <button data-filter="local" onclick="setFilter('local')">📍 मेरे ज़िले की</button>
     </div>
 
     <!-- Feed -->
     <div class="feed" id="feed">
-      <div class="skeleton"><div class="skeleton-line" style="width:40%"></div><div class="skeleton-line" style="width:90%"></div><div class="skeleton-line" style="width:70%"></div></div>
-      <div class="skeleton"><div class="skeleton-line" style="width:40%"></div><div class="skeleton-line" style="width:90%"></div><div class="skeleton-line" style="width:70%"></div></div>
+      <div class="skeleton"><div class="skeleton-line" style="width:40%"></div><div class="skeleton-line" style="width:90%"></div></div>
+      <div class="skeleton"><div class="skeleton-line" style="width:40%"></div><div class="skeleton-line" style="width:90%"></div></div>
     </div>
   </main>
 </div>
 
 <button class="fab" onclick="document.getElementById('postText').focus(); window.scrollTo({top: 0, behavior: 'smooth'});" title="नया पोस्ट">+</button>
 
-<footer>© 2026 DainikState — कमेंट करें, जुड़ें, आवाज़ सुनें 🌍<br>
-<a href="https://dainikstate.com" target="_blank" rel="noopener" style="color:#b71c1c;text-decoration:none;">dainikstate.com</a> से संचालित</footer>
+<footer>© 2026 DainikState — राज्य की आवाज़, आपकी आवाज़ 🌍<br>
+<a href="https://dainikstate.com" target="_blank" rel="noopener" style="color:#b71c1c;text-decoration:none;">dainikstate.com</a> • 
+<a href="https://odysee.com/@DainikState:1" target="_blank" rel="noopener" style="color:#c2185b;text-decoration:none;">Odysee</a> • 
+<a href="https://www.youtube.com/@DainikState" target="_blank" rel="noopener" style="color:#c62828;text-decoration:none;">YouTube</a></footer>
 
 <div class="toast" id="toast"></div>
-
-<div class="modal" id="modal" onclick="closeModal()">
-  <button class="close-btn">✕</button>
-  <div id="modalContent"></div>
-</div>
 
 <!-- Auto-registration modal -->
 <div class="reg-overlay" id="regOverlay">
   <div class="reg-modal">
-    <h2>👋 आपका स्वागत है <span style="color:#b71c1c;">DainikState</span> में!</h2>
-    <p>💬 कमेंट करें, 🎤 वॉइस पोस्ट करें, 🏆 लीडरबोर्ड में जगह बनाएं!<br><br>शुरू करने के लिए अपना नाम बताएं:</p>
-    <input type="text" id="regName" placeholder="आपका नाम" maxlength="30" autofocus />
+    <img src="/images/logo.png" alt="DainikState" />
+    <h2>आपका स्वागत है <span style="color:#b71c1c;">DainikState</span> में!</h2>
+    <div class="tagline">📰 राज्य की आवाज़, अब आपकी ज़ुबान पर</div>
+    <p>💬 कमेंट करें • 🎤 वॉइस पोस्ट • 📍 अपने ज़िले की खबर • 🏆 लीडरबोर्ड में जगह बनाएं</p>
+    <label>आपका नाम:</label>
+    <input type="text" id="regName" placeholder="अपना नाम लिखें" maxlength="30" autofocus />
+    <label>📍 अपना ज़िला चुनें (ज़रूरी — ताकि आपके ज़िले की खबर पहले दिखे):</label>
+    <select id="regDistrict"><option value="">-- ज़िला चुनें --</option></select>
     <button onclick="registerUser()">शुरू करें 🚀</button>
     <button class="skip" onclick="registerAnonymous()">बेनाम जारी रखें</button>
   </div>
@@ -507,7 +521,7 @@
 
 <script>
 /* ====================================================
-   DainikState v3 - Comment-Focused Edition
+   DainikState v4 - Multi-Source + District Priority
    ==================================================== */
 
 const API_BASE = '';
@@ -520,18 +534,49 @@ let mediaRecorder = null;
 let audioChunks = [];
 let recordingStart = 0;
 let recordingTimer = null;
-let userCommentCounts = {};  // {name: count} for leaderboard
-let currentRecordingPostId = null;
+let userCommentCounts = {};
+let currentUserDistrict = null;
+
+/* ====================================================
+   FORWARD DECLARATIONS (prevent hoisting issues)
+   ============================================================ */
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+function formatCount(n) {
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toString();
+}
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60_000) return 'अभी अभी';
+  if (diff < 3_600_000) return Math.floor(diff / 60_000) + ' मिनट पहले';
+  if (diff < 86_400_000) return Math.floor(diff / 3_600_000) + ' घंटे पहले';
+  if (diff < 604_800_000) return Math.floor(diff / 86_400_000) + ' दिन पहले';
+  return Math.floor(diff / 604_800_000) + ' हफ़्ते पहले';
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+// Forward-declared so renderPost can call them
+let renderPost, renderFeed, renderLeaderboard;
 
 /* ====================================================
    AUTO-REGISTRATION
-   ==================================================== */
+   ============================================================ */
 function checkRegistration() {
   const saved = localStorage.getItem('dainikstate_user');
   if (saved) {
     currentUser = JSON.parse(saved);
+    currentUserDistrict = currentUser.district || null;
     applyUserBadge();
     document.getElementById('regOverlay').classList.add('hidden');
+    if (currentUserDistrict) showDistrictBar();
   } else {
     document.getElementById('regOverlay').classList.remove('hidden');
   }
@@ -540,41 +585,41 @@ function checkRegistration() {
 
 function registerUser() {
   const name = document.getElementById('regName').value.trim();
+  const district = document.getElementById('regDistrict').value;
   if (!name) { showToast('⚠️ कृपया अपना नाम दर्ज करें'); return; }
+  if (!district) { showToast('⚠️ कृपया अपना ज़िला चुनें — ताकि आपके ज़िले की खबर पहले दिखे'); return; }
   currentUser = {
     id: 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
-    name,
-    avatar: name[0].toUpperCase(),
-    registeredAt: Date.now(),
-    comments: 0,
-    posts: 0,
-    voice: 0,
+    name, district, avatar: name[0].toUpperCase(),
+    registeredAt: Date.now(), comments: 0, posts: 0, voice: 0,
   };
+  currentUserDistrict = district;
   localStorage.setItem('dainikstate_user', JSON.stringify(currentUser));
   applyUserBadge();
   document.getElementById('regOverlay').classList.add('hidden');
-  showToast('🎉 आपका DainikState में स्वागत है, ' + name + '! पहला कमेंट करें!');
+  showDistrictBar();
+  showToast(`🎉 स्वागत है ${name}! अब ${district} की खबरें पहले दिखेंगी।`);
+  reorderFeedByDistrict();
 }
 
 function registerAnonymous() {
   currentUser = {
     id: 'anon_' + Date.now(),
     name: 'मेहमान_' + Math.floor(Math.random() * 9999),
-    avatar: 'G',
-    registeredAt: Date.now(),
-    comments: 0, posts: 0, voice: 0,
+    district: null, avatar: 'G',
+    registeredAt: Date.now(), comments: 0, posts: 0, voice: 0,
   };
+  currentUserDistrict = null;
   localStorage.setItem('dainikstate_user', JSON.stringify(currentUser));
   applyUserBadge();
   document.getElementById('regOverlay').classList.add('hidden');
-  showToast('👤 बेनाम के रूप में जारी रखा');
+  showToast('👤 बेनाम — सभी जगह की खबरें दिखेंगी');
 }
 
 function applyUserBadge() {
   document.getElementById('uAvatar').textContent = currentUser.avatar;
   document.getElementById('uName').textContent = currentUser.name;
   document.getElementById('userBadge').style.display = 'flex';
-  // Award badge based on comment count
   let badge = '';
   if (currentUser.comments >= 100) badge = '👑';
   else if (currentUser.comments >= 50) badge = '🥈';
@@ -584,82 +629,102 @@ function applyUserBadge() {
   document.getElementById('uBadge').textContent = badge;
 }
 
+function showDistrictBar() {
+  const bar = document.getElementById('districtBar');
+  bar.style.display = 'flex';
+  document.getElementById('userDistrict').value = currentUserDistrict || '';
+  updateLocalCount();
+}
+
+function onDistrictChange() {
+  currentUserDistrict = document.getElementById('userDistrict').value;
+  if (currentUser) {
+    currentUser.district = currentUserDistrict;
+    localStorage.setItem('dainikstate_user', JSON.stringify(currentUser));
+  }
+  reorderFeedByDistrict();
+  updateLocalCount();
+}
+
+function updateLocalCount() {
+  if (!currentUserDistrict) return;
+  const localCount = feed.filter(p => p.district === currentUserDistrict).length;
+  document.getElementById('localCount').textContent = `(${localCount} आपके ज़िले से)`;
+}
+
 function escapeHtml(s) {
   return (s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 }
 
 /* ====================================================
    DISTRICTS
-   ==================================================== */
+   ============================================================ */
 async function loadDistricts() {
   try {
     const res = await fetch(API_BASE + '/api/districts');
     const data = await res.json();
     districts = data.items || [];
-    const sel = document.getElementById('userDistrict');
-    districts.forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = d;
-      opt.textContent = d;
-      sel.appendChild(opt);
+    ['regDistrict', 'userDistrict'].forEach(selId => {
+      const sel = document.getElementById(selId);
+      if (!sel) return;
+      districts.forEach(d => {
+        const opt = document.createElement('option');
+        opt.value = d; opt.textContent = d;
+        sel.appendChild(opt);
+      });
     });
   } catch (err) { console.warn('Districts load failed', err); }
 }
 
 /* ====================================================
    FEED LOADING
-   ==================================================== */
+   ============================================================ */
 async function loadFeed() {
   try {
     const res = await fetch(API_BASE + '/api/feed');
     const data = await res.json();
-
     feed = [];
 
-    // Add news
+    // Add news (dainikstate.com)
     if (data.news?.items) {
       data.news.items.forEach(n => {
         feed.push({
-          id: 'news_' + n.link,
-          type: 'news',
+          id: 'news_' + n.link, type: 'news',
           name: n.author || 'DainikState Desk',
-          text: n.title,
-          description: n.description,
-          summary: n.summary,
-          keyPoints: n.keyPoints,
-          media: n.thumbnail,
-          images: n.images || [],
-          link: n.link,
-          time: n.pubDate,
+          text: n.title, description: n.description,
+          summary: n.summary, keyPoints: n.keyPoints,
+          media: n.thumbnail, images: n.images || [],
+          link: n.link, time: n.pubDate,
           likes: Math.floor(Math.random() * 50),
-          commentCount: Math.floor(Math.random() * 30),  // Simulated baseline engagement
-          liked: false,
-          comments: [],
-          category: n.category,
-          district: n.district,
+          liked: false, comments: [],
+          category: n.category, district: n.district,
         });
       });
     }
 
-    // Add Odysee videos
-    if (data.videos?.items) {
-      data.videos.items.forEach(v => {
+    // Add Odysee
+    if (data.odysee?.items) {
+      data.odysee.items.forEach(v => {
         feed.push({
-          id: 'odysee_' + v.claim_id,
-          type: 'odysee',
-          name: 'DainikState',
-          text: v.title,
-          description: v.description,
-          summary: v.summary,
-          media: v.thumbnail,
-          link: v.url,
-          time: v.release_time,
-          likes: v.views || 0,
-          commentCount: 0,
-          liked: false,
-          comments: [],
-          views: v.views,
-          duration: v.duration,
+          id: 'odysee_' + v.claim_id, type: 'odysee',
+          name: 'DainikState', text: v.title, description: v.description,
+          summary: v.summary, media: v.thumbnail, link: v.url,
+          time: v.release_time, likes: v.views || 0,
+          liked: false, comments: [],
+        });
+      });
+    }
+
+    // Add YouTube
+    if (data.youtube?.items) {
+      data.youtube.items.forEach(v => {
+        feed.push({
+          id: 'yt_' + v.videoId, type: 'youtube',
+          name: 'DainikState YouTube', text: v.title, description: v.description,
+          summary: v.summary, media: v.thumbnail, link: v.url,
+          time: v.release_time, likes: v.likes || 0,
+          liked: false, comments: [],
+          views: v.views, duration: v.duration,
         });
       });
     }
@@ -668,9 +733,9 @@ async function loadFeed() {
     const userPosts = JSON.parse(localStorage.getItem('dainikstate_posts') || '[]');
     userPosts.forEach(p => feed.push(p));
 
-    // Sort by time
-    feed.sort((a, b) => (b.time || 0) - (a.time || 0));
-
+    // District-based sort
+    reorderFeedByDistrict();
+    updateLocalCount();
     renderFeed();
     renderLeaderboard();
   } catch (err) {
@@ -679,51 +744,66 @@ async function loadFeed() {
   }
 }
 
+function reorderFeedByDistrict() {
+  if (!currentUserDistrict) {
+    feed.sort((a, b) => (b.time || 0) - (a.time || 0));
+    return;
+  }
+  // Sort: local first, then others, both by time
+  feed.sort((a, b) => {
+    const aLocal = a.district === currentUserDistrict ? 1 : 0;
+    const bLocal = b.district === currentUserDistrict ? 1 : 0;
+    if (aLocal !== bLocal) return bLocal - aLocal;
+    return (b.time || 0) - (a.time || 0);
+  });
+}
+
 function refreshFeed() {
   showToast('🔄 फीड रिफ्रेश हो रहा है...');
   loadFeed();
 }
 
 /* ====================================================
-   RENDER POST (with comment focus)
-   ==================================================== */
-function renderPost(p) {
+   RENDER POST
+   ============================================================ */
+renderPost = function(p) {
   const sortedComments = [...p.comments].sort((a, b) => b.likes - a.likes);
   const topComment = sortedComments[0];
   const initials = (p.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
   const timeText = typeof p.time === 'number' ? timeAgo(p.time) : p.time;
+  const isLocal = p.district && p.district === currentUserDistrict;
 
   // Source badge
   let sourceBadge = '';
   if (p.type === 'news') sourceBadge = '<span class="source-badge news">📰 DainikState</span>';
+  else if (p.type === 'youtube') sourceBadge = '<span class="source-badge youtube">📹 YouTube</span>';
   else if (p.type === 'odysee') sourceBadge = '<span class="source-badge odysee">📺 Odysee</span>';
   else if (p.type === 'voice') sourceBadge = '<span class="source-badge voice">🎤 वॉइस</span>';
   else sourceBadge = '<span class="source-badge user">💬 विचार</span>';
 
-  // District tag
   const districtTag = p.district ? `<span class="district-tag">📍 ${escapeHtml(p.district)}</span>` : '';
 
-  // Top comment band (always show if exists)
+  // Top comment band
   let topCommentBandHtml = '';
   if (topComment && topComment.likes > 0) {
     const cInitials = (topComment.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
     const voiceIndicator = topComment.voice ? '<span class="voice-comment-indicator">🎤</span>' : '';
     topCommentBandHtml = `
       <div class="top-comment-band">
-        <span class="tc-badge">🏆 सबसे सराहा गया कमेंट</span>
+        <span class="tc-badge">🏆 सबसे सराहा गया</span>
         <div class="c-avatar">${cInitials}</div>
         <div class="c-body">
           <div class="c-name">${voiceIndicator}${escapeHtml(topComment.name)}</div>
           <div class="c-text">${escapeHtml(topComment.text)}</div>
           ${topComment.voice ? `<audio controls src="${topComment.voice}"></audio>` : ''}
-          <div class="c-stats">👍 ${topComment.likes} likes • 💬 सबसे ऊपर pinned</div>
+          <div class="c-stats">👍 ${topComment.likes} likes</div>
         </div>
       </div>`;
   }
 
   // AI Summary
   let summaryHtml = '';
-  if (p.summary && p.type === 'news') {
+  if (p.summary && (p.type === 'news' || p.type === 'youtube' || p.type === 'odysee')) {
     summaryHtml = `
       <div class="ai-summary">
         <div class="ai-label">🤖 AI सारांश</div>
@@ -736,9 +816,9 @@ function renderPost(p) {
   let mediaHtml = '';
   if (p.type === 'news' && (p.media || (p.images && p.images.length > 0))) {
     const imgs = p.images && p.images.length > 0 ? p.images.slice(0, 4) : [p.media];
-    mediaHtml = `<div class="post-media image-gallery">${imgs.map((img, i) => `<img src="${escapeHtml(img)}" onclick="openMedia('${escapeHtml(img)}')" onerror="this.style.display='none'" style="${imgs.length === 1 ? 'aspect-ratio: 16/9; object-fit: cover;' : ''}" />`).join('')}</div>`;
+    mediaHtml = `<div class="post-media image-gallery">${imgs.map((img, i) => `<img src="${escapeHtml(img)}" onclick="openMediaUrl('${escapeHtml(img)}')" onerror="this.style.display='none'" />`).join('')}</div>`;
   } else if (p.type === 'image' && p.media) {
-    mediaHtml = `<div class="post-media"><img src="${p.media}" onclick="openMedia('${p.id}')" /></div>`;
+    mediaHtml = `<div class="post-media"><img src="${p.media}" onclick="openMediaUrl('${p.media}')" /></div>`;
   } else if (p.type === 'video' && p.media) {
     mediaHtml = `<div class="post-media"><video src="${p.media}" controls></video></div>`;
   } else if (p.type === 'voice' && p.voice) {
@@ -747,12 +827,24 @@ function renderPost(p) {
     const thumb = p.media || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 338"><rect fill="%23c2185b" width="600" height="338"/><text x="300" y="180" text-anchor="middle" fill="white" font-size="40">📺</text></svg>';
     mediaHtml = `
       <div class="odysee-card" onclick="openOdysee('${escapeHtml(p.link)}')">
-        <span class="odysee-watermark">odysee</span>
+        <span class="odysee-watermark">ODYSEE</span>
         <img src="${escapeHtml(thumb)}" onerror="this.style.display='none'" />
         <div class="play-icon">▶</div>
         <div class="v-info">
           <div class="v-title">${escapeHtml(p.text)}</div>
-          <div class="v-meta">${formatCount(p.views || 0)} views • Odysee पर देखें</div>
+          <div class="v-meta">${formatCount(p.views || p.likes || 0)} views • Odysee पर देखें</div>
+        </div>
+      </div>`;
+  } else if (p.type === 'youtube') {
+    const thumb = p.media || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 338"><rect fill="%23c62828" width="600" height="338"/><text x="300" y="180" text-anchor="middle" fill="white" font-size="40">▶</text></svg>';
+    mediaHtml = `
+      <div class="youtube-card" onclick="openYouTube('${escapeHtml(p.link)}')">
+        <span class="youtube-watermark">▶ YOUTUBE</span>
+        <img src="${escapeHtml(thumb)}" onerror="this.style.display='none'" />
+        <div class="play-icon">▶</div>
+        <div class="v-info">
+          <div class="v-title">${escapeHtml(p.text)}</div>
+          <div class="v-meta">${formatCount(p.views || 0)} views • YouTube पर देखें</div>
         </div>
       </div>`;
   }
@@ -765,16 +857,13 @@ function renderPost(p) {
     textHtml = `<div class="post-text">${text}</div>`;
   }
 
-  // Other comments
-  const otherComments = (topComment && topComment.likes > 0)
-    ? p.comments.filter(c => c !== topComment)
-    : p.comments;
-
+  // Comments
+  const otherComments = (topComment && topComment.likes > 0) ? p.comments.filter(c => c !== topComment) : p.comments;
   const commentsHtml = p.comments.length === 0
-    ? '<div class="comment-empty"><strong>💬 पहला कमेंट करें!</strong>आपकी राय सबसे पहले दिखेगी — और ज़्यादा likes मिलेंगे!</div>'
+    ? '<div class="comment-empty"><strong>💬 पहला कमेंट करें!</strong>आपकी राय सबसे पहले दिखेगी!</div>'
     : otherComments.map(c => {
         const cInitials = (c.name || 'U').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
-        const voiceInd = c.voice ? '<span class="voice-comment-indicator">🎤 वॉइस</span>' : '';
+        const voiceInd = c.voice ? '<span class="voice-comment-indicator">🎤</span>' : '';
         return `
           <div class="comment ${c.voice ? 'voice-comment' : ''}">
             <div class="c-avatar">${cInitials}</div>
@@ -785,16 +874,13 @@ function renderPost(p) {
               <div class="c-actions">
                 <span class="like-btn" onclick="likeComment('${p.id}', '${escapeHtml(c.name).replace(/'/g, "\\'")}')">👍 ${c.likes}</span>
                 <span onclick="replyTo('${p.id}', '${escapeHtml(c.name).replace(/'/g, "\\'")}')">💬 रिप्लाई</span>
-                <span style="color:#65676b;">${c.voice ? formatDuration(c.duration) : timeAgo(c.time || Date.now())}</span>
               </div>
             </div>
           </div>`;
       }).join('');
 
-  const totalCommentCount = p.comments.length;
-
   return `
-    <div class="post" data-id="${p.id}">
+    <div class="post ${isLocal ? 'local-news' : ''}" data-id="${p.id}">
       <div class="post-header">
         <div class="avatar">${initials}</div>
         <div class="post-meta">
@@ -811,52 +897,69 @@ function renderPost(p) {
           ${p.liked ? '❤️' : '🤍'} <span>${formatCount(p.likes)}</span>
         </button>
         <button class="comment-cta" onclick="focusComment('${p.id}')">
-          💬 कमेंट करें <span class="count">${totalCommentCount}</span>
+          💬 कमेंट करें <span class="count">${p.comments.length}</span>
         </button>
-        <button onclick="sharePost('${p.id}')">↗ शेयर</button>
+        <button onclick="sharePost('${p.id}')">↗</button>
       </div>
       <div class="comments-section" id="comments-${p.id}">
         <h4>
           <span>${topComment && topComment.likes > 0 ? 'अन्य कमेंट्स' : 'कमेंट्स'}</span>
-          <span style="color:#b71c1c;font-weight:700;">${totalCommentCount} कमेंट</span>
+          <span style="color:#b71c1c;font-weight:700;">${p.comments.length} कमेंट</span>
         </h4>
         ${commentsHtml}
         <div class="new-comment">
-          <input type="text" id="cname-${p.id}" placeholder="नाम" value="${escapeHtml(currentUser?.name || '')}" style="flex:0 0 100px;" />
-          <input type="text" id="ctext-${p.id}" placeholder="अपनी राय लिखें... (Enter दबाएं)" onkeydown="if(event.key==='Enter') addComment('${p.id}')" />
+          <input type="text" id="cname-${p.id}" placeholder="नाम" value="${escapeHtml(currentUser?.name || '')}" style="flex:0 0 90px;" />
+          <input type="text" id="ctext-${p.id}" placeholder="अपनी राय..." onkeydown="if(event.key==='Enter') addComment('${p.id}')" />
           <button class="voice-cmt-btn" id="vcbtn-${p.id}" onclick="toggleVoiceComment('${p.id}')" title="वॉइस कमेंट">🎤</button>
           <button onclick="addComment('${p.id}')">भेजें</button>
         </div>
       </div>
     </div>`;
-}
+};
+
+renderFeed = function() {
+  const feedEl = document.getElementById('feed');
+  let filtered = feed;
+  if (currentFilter === 'local') {
+    filtered = feed.filter(p => p.district && p.district === currentUserDistrict);
+  } else if (currentFilter !== 'all') {
+    filtered = feed.filter(p => p.type === currentFilter);
+  }
+
+  if (filtered.length === 0) {
+    const msg = currentFilter === 'local'
+      ? `📍 ${currentUserDistrict || 'आपके ज़िले'} से अभी कोई खबर नहीं।`
+      : '😔 इस category में अभी कुछ नहीं है।';
+    feedEl.innerHTML = `<div class="post" style="padding:30px;text-align:center;color:#65676b;">${msg}</div>`;
+    return;
+  }
+
+  feedEl.innerHTML = filtered.map(p => renderPost(p)).join('');
+};
 
 /* ====================================================
    AI SUMMARIZE
-   ==================================================== */
+   ============================================================ */
 async function summarizeMyText() {
   const text = document.getElementById('postText').value.trim();
-  if (!text) { showToast('⚠️ पहले कुछ लिखें फिर सारांश बनाएं'); return; }
+  if (!text) { showToast('⚠️ पहले कुछ लिखें'); return; }
   try {
     const res = await fetch(API_BASE + '/api/summarize', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
     });
     const data = await res.json();
-    let info = `🤖 सारांश: ${data.summary}`;
-    if (data.district) info += ` | 📍 ज़िला: ${data.district}`;
+    let info = `🤖 ${data.summary.slice(0, 100)}`;
+    if (data.district) info += ` | 📍 ${data.district}`;
     showToast(info);
-  } catch (err) {
-    showToast('⚠️ सारांश नहीं बन सका');
-  }
+  } catch (err) { showToast('⚠️ सारांश नहीं बन सका'); }
 }
 
 /* ====================================================
-   VOICE RECORDING (post + comment)
-   ==================================================== */
+   VOICE RECORDING
+   ============================================================ */
 async function startVoiceRecording() {
-  if (!navigator.mediaDevices) { showToast('❌ ब्राउज़र voice recording support नहीं करता'); return; }
+  if (!navigator.mediaDevices) { showToast('❌ ब्राउज़र support नहीं करता'); return; }
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
@@ -880,10 +983,7 @@ async function startVoiceRecording() {
       const s = Math.floor((Date.now() - recordingStart) / 1000);
       document.getElementById('recDuration').textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
     }, 200);
-    showToast('🎤 रिकॉर्डिंग... रुकने के लिए बटन दबाएं');
-  } catch (err) {
-    showToast('❌ माइक्रोफ़ोन access नहीं मिला');
-  }
+  } catch (err) { showToast('❌ माइक्रोफ़ोन access नहीं मिला'); }
 }
 
 function stopVoiceRecording() {
@@ -897,44 +997,36 @@ function stopVoiceRecording() {
 async function toggleVoiceComment(postId) {
   const btn = document.getElementById('vcbtn-' + postId);
   if (mediaRecorder && mediaRecorder.state === 'recording') {
-    // Stop and save as comment
-    mediaRecorder.onstop = () => {
-      const blob = new Blob(audioChunks, { type: 'audio/webm' });
-      const reader = new FileReader();
-      reader.onload = ev => {
-        const duration = Math.floor((Date.now() - recordingStart) / 1000);
-        addComment(postId, { voice: ev.target.result, duration });
-      };
-      reader.readAsDataURL(blob);
-    };
-    stopVoiceRecording();
+    mediaRecorder.stop();
     btn.classList.remove('recording');
     btn.textContent = '🎤';
   } else {
-    // Start recording for this post
-    currentRecordingPostId = postId;
-    await startVoiceRecording();
-    btn.classList.add('recording');
-    btn.textContent = '⏹';
-    // Override the onstop to use this post
-    const origOnStop = mediaRecorder.onstop;
-    mediaRecorder.onstop = (e) => {
-      const blob = new Blob(audioChunks, { type: 'audio/webm' });
-      const reader = new FileReader();
-      reader.onload = ev => {
-        const duration = Math.floor((Date.now() - recordingStart) / 1000);
-        addComment(postId, { voice: ev.target.result, duration });
-        btn.classList.remove('recording');
-        btn.textContent = '🎤';
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const duration = Math.floor((Date.now() - recordingStart) / 1000);
+          addComment(postId, { voice: ev.target.result, duration });
+        };
+        reader.readAsDataURL(blob);
+        stream.getTracks().forEach(t => t.stop());
       };
-      reader.readAsDataURL(blob);
-    };
+      mediaRecorder.start();
+      recordingStart = Date.now();
+      btn.classList.add('recording');
+      btn.textContent = '⏹';
+    } catch (err) { showToast('❌ माइक access नहीं मिला'); }
   }
 }
 
 /* ====================================================
    USER ACTIONS
-   ==================================================== */
+   ============================================================ */
 function likePost(id) {
   const p = feed.find(x => x.id === id);
   if (!p) return;
@@ -942,7 +1034,7 @@ function likePost(id) {
   p.likes += p.liked ? 1 : -1;
   if (id.toString().startsWith('user_')) saveUserPosts();
   renderFeed();
-  showToast(p.liked ? '❤️ लाइक किया!' : '💔 लाइक हटाया');
+  showToast(p.liked ? '❤️ लाइक किया!' : '💔 हटाया');
 }
 
 function likeComment(postId, cName) {
@@ -952,7 +1044,6 @@ function likeComment(postId, cName) {
   if (!c) return;
   c.likes += 1;
   if (postId.toString().startsWith('user_')) saveUserPosts();
-  // Update leaderboard count
   userCommentCounts[cName] = (userCommentCounts[cName] || 0) + 1;
   if (cName === currentUser.name) {
     currentUser.comments = (currentUser.comments || 0) + 1;
@@ -962,7 +1053,7 @@ function likeComment(postId, cName) {
   saveUserStats();
   renderFeed();
   renderLeaderboard();
-  showToast(`👍 कमेंट को लाइक किया!`);
+  showToast('👍 कमेंट को लाइक किया!');
   setTimeout(() => {
     const el = document.querySelector(`[data-id="${postId}"] .top-comment-band`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -981,17 +1072,13 @@ function addComment(postId, voiceData = null) {
   if (!p) return;
 
   const newComment = {
-    name,
-    text: voiceData ? (text || '🎤 वॉइस कमेंट') : text,
-    likes: 0,
-    time: Date.now(),
-    voice: voiceData?.voice,
-    duration: voiceData?.duration,
+    name, text: voiceData ? (text || '🎤 वॉइस कमेंट') : text,
+    likes: 0, time: Date.now(),
+    voice: voiceData?.voice, duration: voiceData?.duration,
   };
   p.comments.push(newComment);
   if (postId.toString().startsWith('user_')) saveUserPosts();
 
-  // Update user stats
   if (name === currentUser?.name) {
     currentUser.comments = (currentUser.comments || 0) + 1;
     if (voiceData) currentUser.voice = (currentUser.voice || 0) + 1;
@@ -999,15 +1086,12 @@ function addComment(postId, voiceData = null) {
     applyUserBadge();
     loadUserStats();
   }
-
-  // Update leaderboard
   userCommentCounts[name] = (userCommentCounts[name] || 0) + 1;
   saveUserStats();
-
   if (textEl) textEl.value = '';
   renderFeed();
   renderLeaderboard();
-  showToast(voiceData ? '🎤 वॉइस कमेंट जुड़ गया!' : '💬 कमेंट जुड़ गया! लीडरबोर्ड में बढ़ोतरी हुई!');
+  showToast(voiceData ? '🎤 वॉइस कमेंट जुड़ गया!' : '💬 कमेंट जुड़ गया!');
 }
 
 function focusComment(id) {
@@ -1020,10 +1104,7 @@ function focusComment(id) {
 
 function replyTo(postId, cName) {
   const input = document.getElementById(`ctext-${postId}`);
-  if (input) {
-    input.value = `@${cName} `;
-    input.focus();
-  }
+  if (input) { input.value = `@${cName} `; input.focus(); }
 }
 
 function sharePost(id) {
@@ -1063,17 +1144,11 @@ function renderFilePreview() {
   p.innerHTML = '';
   if (!currentFile) return;
   if (currentFile.type === 'image') {
-    const img = document.createElement('img');
-    img.src = currentFile.dataUrl;
-    p.appendChild(img);
+    const img = document.createElement('img'); img.src = currentFile.dataUrl; p.appendChild(img);
   } else if (currentFile.type === 'video') {
-    const v = document.createElement('video');
-    v.src = currentFile.dataUrl; v.controls = true;
-    p.appendChild(v);
+    const v = document.createElement('video'); v.src = currentFile.dataUrl; v.controls = true; p.appendChild(v);
   } else if (currentFile.type === 'voice') {
-    const audio = document.createElement('audio');
-    audio.src = currentFile.dataUrl; audio.controls = true;
-    p.appendChild(audio);
+    const a = document.createElement('audio'); a.src = currentFile.dataUrl; a.controls = true; p.appendChild(a);
   }
   const rm = document.createElement('button');
   rm.textContent = '❌ हटाएं';
@@ -1085,26 +1160,19 @@ function renderFilePreview() {
 
 function addPost() {
   const text = document.getElementById('postText').value.trim();
-  if (!text && !currentFile) { showToast('⚠️ कुछ तो लिखें या फाइल चुनें'); return; }
-
+  if (!text && !currentFile) { showToast('⚠️ कुछ तो लिखें'); return; }
   const type = currentFile ? currentFile.type : 'text';
   const media = currentFile && currentFile.type !== 'voice' ? currentFile.dataUrl : null;
-  const district = document.getElementById('userDistrict').value || null;
+  const district = currentUserDistrict || null;
 
   const newPost = {
-    id: 'user_' + Date.now(),
-    type,
-    name: currentUser.name,
-    text: type === 'voice' ? (text || '🎤 वॉइस पोस्ट') : text,
-    media,
-    voice: type === 'voice' ? currentFile.dataUrl : null,
+    id: 'user_' + Date.now(), type,
+    name: currentUser.name, text: type === 'voice' ? (text || '🎤 वॉइस पोस्ट') : text,
+    media, voice: type === 'voice' ? currentFile.dataUrl : null,
     duration: type === 'voice' ? currentFile.duration : null,
-    district,
-    time: Date.now(),
-    likes: 0, liked: false,
-    comments: [],
+    district, time: Date.now(),
+    likes: 0, liked: false, comments: [],
   };
-
   feed.unshift(newPost);
   saveUserPosts();
   currentUser.posts = (currentUser.posts || 0) + 1;
@@ -1118,7 +1186,7 @@ function addPost() {
   document.getElementById('vidInput').value = '';
   renderFeed();
   loadUserStats();
-  showToast('✅ पोस्ट सफलतापूर्वक जुड़ गया! अब लोग कमेंट करेंगे!');
+  showToast('✅ पोस्ट जुड़ गया!');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1127,17 +1195,20 @@ function saveUserPosts() {
   localStorage.setItem('dainikstate_posts', JSON.stringify(userPosts));
 }
 
-function openMedia(src) {
-  const url = typeof src === 'string' && src.startsWith('http') ? src : (feed.find(p => p.id === src)?.media || '');
-  if (!url) return;
-  document.getElementById('modalContent').innerHTML = `<img src="${url}" />`;
-  document.getElementById('modal').classList.add('open');
+function openMediaUrl(url) {
+  document.getElementById('toast').innerHTML = `<img src="${url}" style="max-width:90vw;max-height:80vh;border-radius:8px;" />`;
+  document.getElementById('toast').classList.add('show');
+  setTimeout(() => { document.getElementById('toast').classList.remove('show'); document.getElementById('toast').innerHTML = ''; }, 5000);
 }
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
 
 function openOdysee(url) {
   window.open(url, '_blank', 'noopener,noreferrer');
-  showToast('📺 Odysee पर वीडियो खुल रहा है...');
+  showToast('📺 Odysee खुल रहा है...');
+}
+
+function openYouTube(url) {
+  window.open(url, '_blank', 'noopener,noreferrer');
+  showToast('📹 YouTube खुल रहा है...');
 }
 
 function showToast(msg) {
@@ -1149,47 +1220,30 @@ function showToast(msg) {
 }
 
 function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-function openMyProfile() { showToast(`👤 ${currentUser.name} | 💬 ${currentUser.comments || 0} कमेंट`); }
+function openMyProfile() { showToast(`👤 ${currentUser.name} | 📍 ${currentUserDistrict || 'सभी जगह'} | 💬 ${currentUser.comments || 0} कमेंट`); }
 
 /* ====================================================
    LEADERBOARD
-   ==================================================== */
-function renderLeaderboard() {
-  // Combine: system users (from current user stats) + comment counts
+   ============================================================ */
+renderLeaderboard = function() {
   const allUsers = { ...userCommentCounts };
-  if (currentUser) {
-    allUsers[currentUser.name] = currentUser.comments || 0;
-  }
-  // Add seed names for visual appeal
-  const seed = {
-    'राजेश कुमार': 23, 'प्रिया सिंह': 18, 'अमित वर्मा': 15, 'सुनीता देवी': 12,
-    'विकास महतो': 9, 'नेहा शर्मा': 7, 'राम लाल': 5,
-  };
-  Object.entries(seed).forEach(([k, v]) => {
-    if (!allUsers[k]) allUsers[k] = v;
-  });
-
-  const sorted = Object.entries(allUsers)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
-
+  if (currentUser) allUsers[currentUser.name] = currentUser.comments || 0;
+  const seed = { 'राजेश कुमार': 23, 'प्रिया सिंह': 18, 'अमित वर्मा': 15, 'सुनीता देवी': 12, 'विकास महतो': 9 };
+  Object.entries(seed).forEach(([k, v]) => { if (!allUsers[k]) allUsers[k] = v; });
+  const sorted = Object.entries(allUsers).sort((a, b) => b[1] - a[1]).slice(0, 5);
   const html = sorted.map(([name, count], i) => {
-    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-    const badge = i === 0 ? '👑 दैनिक चैंपियन' : i === 1 ? '🥈 कमेंट क्वीन' : i === 2 ? '🥉 बहस बादशाह' : '⭐ सक्रिय';
-    const initials = name.split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
     const isMe = name === currentUser?.name;
-    return `
-      <div class="lb-row" style="${isMe ? 'background:rgba(183,28,28,0.1);border-radius:8px;padding:6px 8px;' : ''}">
-        <div class="lb-rank ${rankClass}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1)}</div>
-        <div class="c-avatar" style="width:32px;height:32px;background:#b71c1c;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">${initials}</div>
-        <div class="lb-name">${escapeHtml(name)} ${isMe ? '(आप)' : ''}</div>
-        <div class="lb-count">${count} कमेंट</div>
-        <div class="lb-badge" title="${badge}">${badge.split(' ')[0]}</div>
-      </div>`;
+    const initials = name.split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase();
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
+    return `<div class="lb-row" style="${isMe ? 'background:rgba(183,28,28,0.1);border-radius:6px;padding:4px 8px;' : ''}">
+      <div class="lb-rank">${medal}</div>
+      <div class="c-avatar" style="width:28px;height:28px;background:#b71c1c;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">${initials}</div>
+      <div class="lb-name">${escapeHtml(name)} ${isMe ? '(आप)' : ''}</div>
+      <div class="lb-count">${count} कमेंट</div>
+    </div>`;
   }).join('');
-
   document.getElementById('lbContent').innerHTML = html;
-}
+};
 
 function loadUserStats() {
   const stats = JSON.parse(localStorage.getItem('dainikstate_stats') || '{}');
@@ -1217,14 +1271,8 @@ function formatCount(n) {
   return n.toString();
 }
 
-function formatDuration(s) {
-  if (!s) return '';
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-}
-
 function timeAgo(ts) {
   const diff = Date.now() - ts;
-  if (diff < 0) return 'अभी अभी';
   if (diff < 60_000) return 'अभी अभी';
   if (diff < 3_600_000) return Math.floor(diff / 60_000) + ' मिनट पहले';
   if (diff < 86_400_000) return Math.floor(diff / 3_600_000) + ' घंटे पहले';
@@ -1240,14 +1288,11 @@ loadDistricts();
 loadFeed();
 renderLeaderboard();
 
-// Enter in registration
-document.getElementById('regName').addEventListener('keydown', e => {
-  if (e.key === 'Enter') registerUser();
-});
+document.getElementById('regName').addEventListener('keydown', e => { if (e.key === 'Enter') registerUser(); });
 
-// Auto-refresh every 5 min
 setInterval(() => { if (!document.hidden) loadFeed(); }, 5 * 60 * 1000);
 </script>
 
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1917800ecd07a28',t:'MTc4MzcwNjQzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
